@@ -1,0 +1,39 @@
+
+version: '3'
+services:
+    nginx: 
+        container_name: nginx
+        image: nginx:latest
+        networks: 
+            - named_network
+        ports:
+            - "8080:8686"
+        volumes:
+            - /Users/daveg/work/development/personal/docker/config/nginx/node-server.conf:/etc/nginx/conf.d/000node-server.conf:ro
+        depends_on:
+            - "node"
+    node:    
+        container_name: node
+        image: node:latest
+        environment: 
+            - MONGO_PASSWORD=Stay-Frosty
+        networks: 
+            - named_network            
+        ports:
+            - "3000:3000"            
+        volumes:
+            - $PWD:/var/www
+        working_dir: /var/www
+        command: ["npm", "start"]
+        depends_on:
+            - "mongo"
+    mongo: 
+        container_name: mongo
+        image: mongo:latest        
+        networks: 
+            - named_network
+        volumes:
+            - /Users/daveg/work/development/personal/docker/volumes/mongo:/data/db        
+networks:
+    named_network:
+        driver: bridge
